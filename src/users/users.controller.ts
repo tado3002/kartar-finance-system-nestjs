@@ -13,6 +13,7 @@ import { Response } from 'src/common/interfaces/response.interface';
 import { UserResponse } from 'src/common/interfaces/user.interface';
 import { toUserResponse } from 'src/common/lib/responseFormater';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
