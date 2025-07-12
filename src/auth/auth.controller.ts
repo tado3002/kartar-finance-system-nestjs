@@ -22,14 +22,14 @@ export class AuthController {
   ) {}
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    const user = await this.userService.userByEmail(loginDto.email);
+    const user = await this.userService.findByEmail(loginDto.email);
     if (!user)
       throw new UnauthorizedException({ message: 'email atau password salah' });
     const isPasswordMatch = user.password === loginDto.password;
     if (!isPasswordMatch)
       throw new UnauthorizedException({ message: 'email atau password salah' });
 
-    const session = await this.sessionService.create(user.id);
+    const session = await this.sessionService.create(user);
     const data = {
       success: true,
       data: {

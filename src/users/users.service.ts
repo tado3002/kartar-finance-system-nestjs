@@ -1,31 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { User } from 'generated/prisma';
-import { PrismaService } from 'src/prisma.service';
-import { CreateUsersDto } from './create-users.dto';
+import { CreateUsersDto } from './dto/create-users.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './users.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
-  async userById(id: number): Promise<User | null> {
-    return await this.prisma.user.findFirst({
-      where: {
-        id,
-      },
-    });
+  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  async findById(id: number): Promise<User | null> {
+    return await this.userRepo.findOneBy({ id });
   }
-  async userByEmail(email: string): Promise<User | null> {
-    return await this.prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.userRepo.findOneBy({ email });
   }
 
   async users(): Promise<User[]> {
-    return await this.prisma.user.findMany();
+    return await this.userRepo.find();
   }
 
-  async create(data: CreateUsersDto): Promise<void> {
-    await this.prisma.user.create({ data });
+  async create(data: CreateUsersDto): Promise<User> {
+    const newUser = this.userRepo.create(data);
+    return await this.userRepo.save(newUser);
   }
 }

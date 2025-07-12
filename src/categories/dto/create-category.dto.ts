@@ -1,11 +1,11 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { $Enums, Category } from 'generated/prisma';
+import { Type } from '../categories.entity';
 
-export class CreateCategoryDto implements Omit<Category, 'id'> {
+export class CreateCategoryDto {
   @IsNotEmpty()
   @IsString()
   name: string;
   @IsString()
-  @IsEnum($Enums.Type)
-  type: $Enums.Type;
+  @IsEnum(Type)
+  type: Type;
 }

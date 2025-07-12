@@ -1,8 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Transaction } from 'generated/prisma';
 
-export class CreateTransactionDto implements Omit<Transaction, 'id'> {
+export class CreateTransactionDto {
   @IsNotEmpty()
   @IsNumber()
   amount: bigint;

@@ -1,36 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { Category } from 'generated/prisma';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Category } from './categories.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(Category) private categoryRepo: Repository<Category>,
+  ) {}
   async create(data: CreateCategoryDto): Promise<void> {
-    await this.prisma.category.create({ data });
+    const category = this.categoryRepo.create({ ...data });
+    await this.categoryRepo.save(category);
   }
 
   async all(): Promise<Category[]> {
-    return await this.prisma.category.findMany();
+    return await this.categoryRepo.find();
   }
 
   async update(id: number, data: UpdateCategoryDto): Promise<void> {
-    await this.prisma.category.update({
-      where: { id },
-      data,
-    });
+    const category = await this.categoryRepo.findOneBy({ id });
+    Object.assign(category!, data);
+    await this.categoryRepo.save(category!);
   }
 
   async one(id: number): Promise<Category | null> {
-    return await this.prisma.category.findFirst({
-      where: { id },
-    });
+    return await this.categoryRepo.findOneBy({ id });
   }
 
   async delete(id: number): Promise<void> {
-    await this.prisma.category.delete({
-      where: { id },
-    });
+    await this.categoryRepo.delete(id);
   }
 }
