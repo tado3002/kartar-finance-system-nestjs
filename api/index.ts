@@ -7,15 +7,10 @@ let cachedApp: any = null;
 
 async function bootstrap() {
   if (!cachedApp) {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, { cors: true });
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true }),
     );
-    app.enableCors({
-      origin: ['http://localhost:8080'],
-      allowedHeaders: 'Content-Type, Accept, Authorization',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    });
     await app.init();
     cachedApp = app.getHttpAdapter().getInstance();
   }
