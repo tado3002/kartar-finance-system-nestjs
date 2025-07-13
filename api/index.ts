@@ -14,6 +14,7 @@ async function bootstrap() {
     app.enableCors({
       origin: ['http://localhost:8080'],
       allowedHeaders: 'Content-Type, Accept, Authorization',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     });
     await app.init();
     cachedApp = app.getHttpAdapter().getInstance();
