@@ -9,9 +9,9 @@ import {
 import { CreateUsersDto } from './dto/create-users.dto';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { Response } from 'src/common/interfaces/response.interface';
-import { UserResponse } from 'src/common/interfaces/user.interface';
-import { toUserResponse } from 'src/common/lib/responseFormater';
+import { Response } from '../common/interfaces/response.interface';
+import { UserResponse } from '../common/interfaces/user.interface';
+import { toUserResponse } from '../common/lib/responseFormater';
 
 @UseGuards(AuthGuard)
 @Controller('users')
