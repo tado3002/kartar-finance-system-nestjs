@@ -31,6 +31,9 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException({ message: 'session expired' });
     }
 
+    // add user object to request
+    request['user'] = session.user;
+
     return true;
   }
 }

@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Transaction } from './transactions.entity';
 import { Category } from 'src/categories/categories.entity';
 import { User } from 'src/users/users.entity';
+import { GenericFilter } from 'src/common/interfaces/generic-filter.interface';
+import { TransactionFilter } from './dto/transaction-filter';
 
 @Injectable()
 export class TransactionsService {
@@ -35,6 +37,18 @@ export class TransactionsService {
           email: true,
         },
       },
+    });
+  }
+
+  async paginate(filter: TransactionFilter): Promise<[Transaction[], number]> {
+    return await this.transactionRepository.findAndCount({
+      where: {
+        categoryId: filter.categoryId,
+      },
+      order: { id: filter.sort },
+      skip: (filter.page! - 1) * (filter.limit! + 1),
+      take: filter.limit!,
+      relations: ['category'],
     });
   }
 
