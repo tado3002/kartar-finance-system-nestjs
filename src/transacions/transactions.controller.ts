@@ -13,7 +13,6 @@ import {
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { Request } from 'express';
-import { SessionService } from 'src/auth/session.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Category } from 'src/categories/categories.entity';
@@ -29,10 +28,7 @@ declare global {
 }
 @Controller('transactions')
 export class TransactionsController {
-  constructor(
-    private readonly transactionService: TransactionsService,
-    private readonly sessionService: SessionService,
-  ) {}
+  constructor(private readonly transactionService: TransactionsService) {}
   @Get()
   async all() {
     const transactions = await this.transactionService.findAll();

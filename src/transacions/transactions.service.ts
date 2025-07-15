@@ -20,7 +20,7 @@ export class TransactionsService {
 
   async findAll(): Promise<Transaction[]> {
     return await this.transactionRepository.find({
-      relations: ['category', 'user'],
+      relations: ['category'],
       select: {
         id: true,
         amount: true,
@@ -30,11 +30,6 @@ export class TransactionsService {
           id: true,
           name: true,
           type: true,
-        },
-        user: {
-          id: true,
-          username: true,
-          email: true,
         },
       },
     });
