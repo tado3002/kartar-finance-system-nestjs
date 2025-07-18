@@ -25,14 +25,18 @@ export class Transaction {
   @Column({ name: 'category_id' })
   categoryId: number;
 
-  @ManyToOne(() => Category, (category) => category.transactions)
+  @ManyToOne(() => Category, (category) => category.transactions, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'category_id' })
   category: Category;
 
   @Column({ name: 'user_id' })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.transactions)
+  @ManyToOne(() => User, (user) => user.transactions, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

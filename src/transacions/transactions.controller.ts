@@ -29,6 +29,7 @@ declare global {
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionService: TransactionsService) {}
+
   @Get()
   async all() {
     const transactions = await this.transactionService.findAll();
