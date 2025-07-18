@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-import { User } from 'src/common/interfaces/user.interface';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { User } from '../../common/interfaces/user.interface';
+import { Role } from '../users.entity';
 export class CreateUsersDto implements Omit<User, 'id'> {
   @IsNotEmpty()
   @IsString()
@@ -10,4 +11,7 @@ export class CreateUsersDto implements Omit<User, 'id'> {
   @IsNotEmpty()
   @IsString()
   password: string;
+  @IsOptional()
+  @IsEnum(Role)
+  role: Role;
 }
