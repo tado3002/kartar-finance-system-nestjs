@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Header,
   Post,
   Req,
   UnauthorizedException,
@@ -13,6 +12,7 @@ import { LoginDto } from './dto/auth.dto';
 import { SessionService } from './session.service';
 import { Request } from 'express';
 import { AuthGuard } from './auth.guard';
+import { toUserResponse } from '../common/lib/responseFormater';
 
 @Controller('auth')
 export class AuthController {
@@ -33,14 +33,22 @@ export class AuthController {
     const data = {
       success: true,
       data: {
-        user: {
-          username: user.username,
-          email: user.email,
-        },
+        user: toUserResponse(user),
         sessionId: session,
       },
     };
     return data;
+  }
+  @UseGuards(AuthGuard)
+  @Get('verify')
+  async verify(@Req() req: Request) {
+    const user = req['user'];
+    return {
+      success: true,
+      data: {
+        user: toUserResponse(user!),
+      },
+    };
   }
   @UseGuards(AuthGuard)
   @Get('logout')
