@@ -20,6 +20,7 @@ dotenv.config();
       type: 'postgres',
       url: process.env.POSTGRES_URL,
       entities: [User, Session, Transaction, Category],
+      synchronize: true,
     }),
     UsersModule,
     AuthModule,
