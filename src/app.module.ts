@@ -12,6 +12,8 @@ import { User } from './users/users.entity';
 import { Session } from './auth/session.entity';
 import { Transaction } from './transacions/transactions.entity';
 import { Category } from './categories/categories.entity';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { Attachment } from './cloudinary/attachment.entity';
 dotenv.config();
 
 @Module({
@@ -19,13 +21,14 @@ dotenv.config();
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.POSTGRES_URL,
-      entities: [User, Session, Transaction, Category],
+      entities: [User, Session, Transaction, Category, Attachment],
       synchronize: true,
     }),
     UsersModule,
     AuthModule,
     CategoriesModule,
     TransactionsModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

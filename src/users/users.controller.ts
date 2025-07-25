@@ -16,13 +16,16 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Response } from '../common/interfaces/response.interface';
 import { UserResponse } from '../common/interfaces/user.interface';
 import { toUserResponse } from '../common/lib/responseFormater';
-import { AdminRoleGuard } from '../common/guards/admin-role.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from './users.entity';
 
-@UseGuards(AuthGuard, AdminRoleGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
   @Get()
+  @Roles(Role.ADMIN, Role.FINANCE)
   async findAll(): Promise<Response<UserResponse[]>> {
     const users = await this.userService.users();
     return {
@@ -31,36 +34,28 @@ export class UsersController {
     };
   }
   @Post()
+  @Roles(Role.ADMIN)
   async create(@Body() createUserDto: CreateUsersDto): Promise<Response<null>> {
-    const existUser = await this.userService.findByEmail(createUserDto.email);
-    if (existUser)
-      throw new UnprocessableEntityException({
-        message: 'email sudah digunakan!',
-      });
     await this.userService.create(createUserDto);
     return {
       success: true,
     };
   }
   @Put(':id/update-role')
+  @Roles(Role.ADMIN)
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: Pick<CreateUsersDto, 'role'>,
   ) {
-    const existUser = await this.userService.findById(+id);
-    if (!existUser)
-      throw new NotFoundException({ mesage: 'user id not found' });
-    await this.userService.updateRole(existUser, updateUserDto.role);
+    await this.userService.updateRole(+id, updateUserDto.role);
 
     return {
       success: true,
     };
   }
   @Delete(':id')
+  @Roles(Role.ADMIN)
   async delete(@Param('id') id: string) {
-    const existUser = await this.userService.findById(+id);
-    if (!existUser)
-      throw new NotFoundException({ mesage: 'user id not found' });
     await this.userService.remove(+id);
     return {
       success: true,

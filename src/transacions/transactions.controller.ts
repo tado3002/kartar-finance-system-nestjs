@@ -8,7 +8,9 @@ import {
   Put,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -17,7 +19,11 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Category } from 'src/categories/categories.entity';
 import { TransactionFilter } from './dto/transaction-filter';
-import { User } from 'src/users/users.entity';
+import { Role, User } from 'src/users/users.entity';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationPipe } from './file-validation.pipe';
 
 declare global {
   namespace Express {
@@ -56,34 +62,61 @@ export class TransactionsController {
       },
     };
   }
-
   @UseGuards(AuthGuard)
+  @Get('my-transactions')
+  async myTransactions(@Req() req: Request) {
+    const user = req.user!;
+    const transactions = await this.transactionService.getTransactionsByUser(
+      user.id,
+    );
+    return {
+      success: true,
+      data: transactions,
+    };
+  }
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.FINANCE, Role.ADMIN)
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  async create(@Body() createData: CreateTransactionDto, @Req() req: Request) {
+  async create(
+    @Body() createData: CreateTransactionDto,
+    @Req() req: Request,
+    @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
+  ) {
     const currentUser = req.user!;
-    await this.transactionService.create(currentUser, createData);
+    await this.transactionService.create(currentUser, createData, file);
     return {
       success: true,
     };
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.FINANCE, Role.ADMIN)
+  @UseInterceptors(FileInterceptor('file'))
   @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateData: UpdateTransactionDto,
+    @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
+    @Query('removeAttachment') removeAttachment: boolean,
     @Req() req: Request,
   ) {
     const currentUser = req.user!;
-    updateData.user_id = currentUser.id;
 
-    await this.transactionService.update(+id, currentUser, updateData);
+    await this.transactionService.update(
+      +id,
+      currentUser,
+      updateData,
+      removeAttachment,
+      file,
+    );
     return {
       success: true,
     };
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.FINANCE, Role.ADMIN)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     await this.transactionService.delete(+id);

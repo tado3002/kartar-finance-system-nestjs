@@ -13,6 +13,9 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from 'src/users/users.entity';
 
 @Controller('categories')
 export class CategoriesController {
@@ -25,7 +28,8 @@ export class CategoriesController {
       data: categories,
     };
   }
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.FINANCE, Role.ADMIN)
   @Post()
   async create(@Body() createData: CreateCategoryDto) {
     await this.categoriesService.create(createData);
@@ -34,24 +38,20 @@ export class CategoriesController {
     };
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.FINANCE, Role.ADMIN)
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateData: UpdateCategoryDto) {
-    const categories = await this.categoriesService.one(+id);
-    if (!categories)
-      throw new NotFoundException({ error: 'category not found' });
     await this.categoriesService.update(+id, updateData);
     return {
       success: true,
     };
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.FINANCE, Role.ADMIN)
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const categories = await this.categoriesService.one(+id);
-    if (!categories)
-      throw new NotFoundException({ error: 'category not found' });
     await this.categoriesService.delete(+id);
     return {
       success: true,

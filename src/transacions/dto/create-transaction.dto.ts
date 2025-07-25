@@ -4,6 +4,7 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class CreateTransactionDto {
   @IsNotEmpty()
   @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   amount: bigint;
 
   @IsNotEmpty()
@@ -16,9 +17,11 @@ export class CreateTransactionDto {
 
   @IsNotEmpty()
   @IsNumber()
-  category_id: number;
+  @Transform(({ value }) => parseInt(value))
+  categoryId: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  user_id: number;
+  @Transform(({ value }) => parseInt(value))
+  userId: number;
 }
